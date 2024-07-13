@@ -18,10 +18,38 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  email String  @unique
-  userName  String?
-  firstName String?
-  lastName  String?
+  email     String  @unique
+  userName  String  @unique
+  firstName String
+  lastName  String
   password  String
   online    Boolean @default(false)
+  reviews   Review[]
+}
+
+model Book {
+  id    Int     @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title         String
+  author        String
+  publisher     String
+  publishedYear Int
+  description   String
+  imageUrl      String
+  reviews       Review[]
+}
+
+model Review {
+  id    Int     @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  rating  Int
+  comment String
+  bookId Int
+  userId Int
+  book Book @relation(fields: [bookId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 }
