@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Query } from '@nestjs/common';
 import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { BookEntity } from './entities/book.entity';
+import { PaginationQueryDto } from './dto/pagination-query.dto';
 
 @Controller('books')
 @ApiTags('books')
@@ -20,9 +21,12 @@ export class BooksController {
 
   @Get()
   @ApiOkResponse({ type: [BookEntity] })
-  async findAll() {
-    const books = await this.booksService.findAll();
-    return books.map((book) => new BookEntity(book));
+  async findAll(
+    @Query('skip', ParseIntPipe) skip = 0,
+    @Query('take', ParseIntPipe) take = 10
+  ) {
+    const { books, total } = await this.booksService.findAll(skip, take);
+    return { books: books.map((book) => new BookEntity(book)), total };
   }
 
   @Get(':id')

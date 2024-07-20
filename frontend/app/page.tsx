@@ -5,26 +5,33 @@ import Banner from "./components/Banner";
 import { useEffect, useState } from "react";
 import { Book } from "./types";
 import BookCard from "./components/BookCard";
+import PaginationControls from "./components/PaginationControls";
 
 export default function Home() {
   const [books, setBooks] = useState<Book[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const pageSize = 10; // Number of books per page
 
   useEffect(() => {
-    const fetchBooks = async () => {
-      const response = await fetch("http://localhost:8000/books");
-      const books = await response.json();
+    const fetchBooks = async (page: number) => {
+      const skip = (page - 1) * pageSize;
+      const response = await fetch(`http://localhost:8000/books?skip=${skip}&take=${pageSize}`);
+      const { books, total } = await response.json();
       setBooks(books);
-      // console.log(books);
+      setTotalPages(Math.ceil(total / pageSize));
     };
 
-    fetchBooks();
-  }, []);
+    fetchBooks(currentPage);
+  }, [currentPage]);
 
-  // useEffect(() => {
-  //   console.log(books);
-  // }, [books]);
-    
-  
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  useEffect(() => {
+    console.log(books)
+  }, [books]);
 
   return (
     <main>
@@ -39,6 +46,11 @@ export default function Home() {
               book={book}/>
           ))}
         </div>
+        <PaginationControls
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
       </section>
     </main>
   );

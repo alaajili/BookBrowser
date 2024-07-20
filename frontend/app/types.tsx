@@ -7,3 +7,9 @@ export interface Book {
   description: string;
   publisher: string;
 }
+
+export interface PaginationControlsProps {
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+}

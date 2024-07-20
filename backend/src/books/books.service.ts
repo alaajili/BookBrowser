@@ -13,8 +13,13 @@ export class BooksService {
     });
   }
 
-  findAll() {
-    return this.prisma.book.findMany();
+  async findAll(skip: number, take: number) {
+    const books = await this.prisma.book.findMany({
+      skip,
+      take,
+    });
+    const total = await this.prisma.book.count();
+    return { books, total };
   }
 
   findOne(id: number) {
